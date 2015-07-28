@@ -15,3 +15,8 @@ server.pid
 *.eml
 /dist/
 .cache
+
+# Eclipse 
+.classpath
+.settings/
+.project
