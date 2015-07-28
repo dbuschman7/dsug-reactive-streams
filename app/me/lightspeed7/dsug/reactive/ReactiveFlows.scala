@@ -18,6 +18,7 @@ object Scenarios {
 
   implicit val system = ActorSystem("Sys")
   implicit val materializer = ActorMaterializer()
+  val TotalEvents = 20000
 
   def runScenario(num: Int): RunnableGraph[Unit] = num match {
     case 1 =>
@@ -45,7 +46,7 @@ object Scenarios {
       import FlowGraph.Implicits._
 
       // get the elements for this flow.
-      val source = throttledSource(1 second, 20 milliseconds, 20000, "fastProducer")
+      val source = throttledSource(1 second, 20 milliseconds, TotalEvents, "fastSource")
       val fastSink = Sink.actorSubscriber(Props(classOf[DelayingActor], "fastSink", 0L))
 
       // connect source to sink
@@ -67,8 +68,8 @@ object Scenarios {
       import FlowGraph.Implicits._
 
       // get the elements for this flow.
-      val source = throttledSource(1 second, 20 milliseconds, 10000, "fastProducer")
-      val slowingSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "slowingDownSink", 10L))
+      val source = throttledSource(1 second, 20 milliseconds, TotalEvents, "fastSource")
+      val slowingSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "slowSink", 25L, 0L))
 
       // connect source to sink
       source ~> slowingSink
@@ -87,14 +88,14 @@ object Scenarios {
       import FlowGraph.Implicits._
 
       // first get the source
-      val source = throttledSource(1 second, 30 milliseconds, 6000, "fastProducer")
-      val slowingSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "slowingDownSinkWithBuffer", 20L))
+      val source = throttledSource(1 second, 20 milliseconds, TotalEvents, "fastSource")
+      val slowingSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "slowSink", 25L, 0L))
 
       // now get the buffer, with 100 messages, which overflow
       // strategy that starts dropping messages when it is getting
       // too far behind.
       //      val buffer = Flow[Int].buffer(3000, OverflowStrategy.dropHead)
-      val buffer = Flow[Int].buffer(1000, OverflowStrategy.backpressure)
+      val buffer = Flow[Int].buffer(300, OverflowStrategy.backpressure)
 
       // connect source to sink with additional step
       source ~> buffer ~> slowingSink
@@ -111,18 +112,18 @@ object Scenarios {
       import FlowGraph.Implicits._
 
       // first get the source
-      val source = throttledSource(1 second, 20 milliseconds, 9000, "fastProducer")
+      val source = throttledSource(1 second, 20 milliseconds, TotalEvents, "fastSource")
 
       // and the sinks
-      val fastSink = Sink.actorSubscriber(Props(classOf[DelayingActor], "broadcast_fastsink", 0L))
-      val slowingDownSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "broadcast_slowsink", 20L))
+      val fastSink = Sink.actorSubscriber(Props(classOf[DelayingActor], "fastSink", 0L))
+      val slowSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "slowSink", 25L, 0L))
 
       // and the broadcast
       val broadcast = builder.add(Broadcast[Int](2))
 
       // use a broadcast to split the stream
       source ~> broadcast ~> fastSink
-      broadcast ~> slowingDownSink
+      /*     */ broadcast ~> slowSink
     }
   }
 
@@ -136,20 +137,20 @@ object Scenarios {
       import FlowGraph.Implicits._
 
       // first get the source
-      val source = throttledSource(1 second, 20 milliseconds, 9000, "fastProducer")
+      val source = throttledSource(1 second, 20 milliseconds, TotalEvents, "fastSource")
 
       // and the sinks
       val fastSink = Sink.actorSubscriber(Props(classOf[DelayingActor], "fastSink", 0L))
-      val slowingDownSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "slowSink", 30L))
+      val slowSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "slowSink", 25L, 0L))
       //      val buffer = Flow[Int].buffer(300, OverflowStrategy.dropTail)
-      val buffer = Flow[Int].buffer(3500, OverflowStrategy.backpressure)
+      val buffer = Flow[Int].buffer(300, OverflowStrategy.backpressure)
 
       // and the broadcast
       val broadcast = builder.add(Broadcast[Int](2))
 
       // connect source to sink with additional step
-      source ~> broadcast ~> fastSink
-      /*      */ broadcast ~> buffer ~> slowingDownSink
+      source ~> broadcast /*     */ ~> fastSink
+      /*     */ broadcast ~> buffer ~> slowSink
     }
   }
 
@@ -164,16 +165,16 @@ object Scenarios {
       import FlowGraph.Implicits._
 
       // first get the source
-      val source = throttledSource(1 second, 10 milliseconds, 20000, "fastProducer")
+      val source = throttledSource(1 second, 20 milliseconds, TotalEvents, "fastSource")
 
       // and the sin
-      val fastSink = Sink.actorSubscriber(Props(classOf[DelayingActor], "fastSinkWithBalancer", 12L))
-      val slowingDownSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "slowingDownWithBalancer", 14l, 1L))
+      val fastSink = Sink.actorSubscriber(Props(classOf[DelayingActor], "fastSink", 0L))
+      val slowSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "slowSink", 25L, 0L))
       val balancer = builder.add(Balance[Int](2))
 
       // connect source to sink with additional step
       source ~> balancer ~> fastSink
-      balancer ~> slowingDownSink
+      /*     */ balancer ~> slowSink
     }
   }
 
@@ -200,7 +201,7 @@ object Scenarios {
       // setup the message flow
       tickSource ~> zip.in0
       rangeSource ~> zip.in1
-      zip.out ~> unzip ~> sendMap
+      /*          */ zip.out ~> unzip ~> sendMap
 
       sendMap.outlet
     }
@@ -219,7 +220,7 @@ class DelayingActor(val name: String, val delay: Long = 0) extends ActorSubscrib
   }
 }
 
-class SlowDownActor(name: String, delayPerMsg: Long = 0, initialDelay: Long = 0) extends ActorSubscriber with Monitoring {
+class SlowDownActor(name: String, delayPerMsg: Long, initialDelay: Long) extends ActorSubscriber with Monitoring {
   override protected def requestStrategy: RequestStrategy = OneByOneRequestStrategy
 
   actorName = name

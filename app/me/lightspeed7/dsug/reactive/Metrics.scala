@@ -49,20 +49,14 @@ object MetricsCollector extends nl.grons.metrics.scala.InstrumentedBuilder {
     register(name, new MetricTimer(metrics.timer(name), metricName))
   }
 
-  def getCurrentData(now: Long): Seq[JsValue] = {
-    metricMap.values
-      .flatMap { metric => metric.getCurrentData }
-      .map { j => j.as[JsObject] }
-      .map { value => JsObject(value.fields :+ ("timestamp" -> JsString(now.toString))) }
-      .toSeq
-  }
+  def getCurrentData(now: Long): Seq[MetricData] = metricMap.values.map { metric => metric.getCurrentData(now) }.toSeq
 
 }
 
 //
 // Metric Data Holding 
 // //////////////////////////////
-case class MetricData(metricType: MetricType, baseName: String, metricName: String, value: Long)
+case class MetricData(timestamp: Long, metricType: MetricType, baseName: String, metricName: String, value: Long)
 object MetricData {
   implicit val format = Json.format[MetricData]
 }
@@ -75,7 +69,7 @@ sealed trait Metric {
 
   private[reactive] def toMillis(in: Long): Long = in / (1000 * 1000)
 
-  def getCurrentData: Seq[JsValue]
+  def getCurrentData(now: Long): MetricData
 }
 
 class MetricCounter(counter: Counter, baseName: String) extends Metric {
@@ -91,10 +85,10 @@ class MetricCounter(counter: Counter, baseName: String) extends Metric {
   def incrementBy(delta: Long) = counter.inc(delta)
   def decrementBy(delta: Long) = counter.dec(delta)
 
-  def getCurrentData: Seq[JsValue] = {
+  def getCurrentData(now: Long): MetricData = {
     val currentValue = counter.count
     decrementBy(currentValue) // reset back to "zero" for next pull
-    Seq(Json.toJson(MetricData(metricType, baseName, metricType.name, currentValue)))
+    MetricData(now, metricType, baseName, metricType.name, currentValue)
   }
 }
 
@@ -104,12 +98,12 @@ class MetricTimer(timer: Timer, baseName: String) extends Metric {
 
   // Not exposing everything on purpose.
   def time[A](f: => A): A = timer.time(f)
-  def update(durationInMillis:Long) = timer.update(durationInMillis, TimeUnit.MILLISECONDS)
+  def update(durationInMillis: Long) = timer.update(durationInMillis, TimeUnit.MILLISECONDS)
 
   def count: Long = timer.count
 
-  def getCurrentData: Seq[JsValue] = {
+  def getCurrentData(now: Long): MetricData = {
     val currentValue = timer.snapshot.get95thPercentile() // try this one for now.
-    Seq(Json.toJson(MetricData(metricType, baseName, metricType.name, toMillis(currentValue.toLong))))
+    MetricData(now, metricType, baseName, metricType.name, toMillis(currentValue.toLong))
   }
 }

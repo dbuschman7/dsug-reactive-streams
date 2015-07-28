@@ -79,16 +79,18 @@ object `package` {
       case Counts(key, value) => {
         EventBus.publish(MessageEvent("payload", Payload(JsNumber(value), key)))
 
+        val now = System.currentTimeMillis() / 1000
+        
         val results = Seq("CO", "NY", "FL", "CA", "HI").map { st => Count(st, Random.nextInt(100)) }
-        val tsc = TimeSeriesCount(System.currentTimeMillis() / 1000, results)
-        EventBus.publish(MessageEvent("payload", Payload(Json.toJson(tsc), "geoAvgBids")))
+        val metrics = MetricsCollector.getCurrentData(now)
+          .filter(_.metricType == MetricType.Counter)
+          .map { m => Count(m.baseName, m.value) }
 
-        val json = MetricsCollector.getCurrentData(System.currentTimeMillis() / 1000)
-        println(json)
+        val tsc = TimeSeriesCount(now, metrics)
+        EventBus.publish(MessageEvent("payload", Payload(Json.toJson(tsc), "counters")))
       }
 
       case TimerEvent(actorName, time) => {
-//        println(s"Timer   - ${actorName} -> ${time}")
         MetricsCollector.find(MetricType.Timer, actorName)
           .getOrElse(MetricsCollector.newMetricTimer(actorName))
           .asInstanceOf[MetricTimer]
@@ -96,7 +98,6 @@ object `package` {
       }
 
       case CounterEvent(actorName, count) => {
-//        println(s"Counter - ${actorName} -> ${count}")
         MetricsCollector.find(MetricType.Counter, actorName)
           .getOrElse(MetricsCollector.newMetricCounter(actorName))
           .asInstanceOf[MetricCounter]

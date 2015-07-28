@@ -12,7 +12,7 @@ object Payload {
   implicit val payloadFormat = Json.format[Payload]
 }
 
-case class Count(key: String, count: Int)
+case class Count(key: String, count: Long)
 object Count {
   implicit val countFormat = Json.format[Count]
 }

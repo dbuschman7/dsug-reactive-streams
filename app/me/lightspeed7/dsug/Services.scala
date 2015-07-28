@@ -22,7 +22,7 @@ object Actors {
   def start = {
     generator
     // more here
-    current = Scenarios.runScenario(1)
+    current = Scenarios.runScenario(6)
 
     Logger.info("Actors - Generator started")
   }
