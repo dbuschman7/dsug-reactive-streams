@@ -50,6 +50,9 @@ object ApplicationBuild extends Build {
     // Reactive
     "com.typesafe.akka" % "akka-stream-experimental_2.11" % "1.0",
     "com.typesafe.akka" %% "akka-contrib" % "2.4-M2",
+    "nl.grons" %% "metrics-scala" % "3.5.1_a2.3",
+    "com.beachape" %% "enumeratum" % "1.2.2",
+    "com.beachape" %% "enumeratum-play" % "1.2.2",
 
     // Testing
     "org.scalatestplus" %% "play" % "1.1.0" % "test",

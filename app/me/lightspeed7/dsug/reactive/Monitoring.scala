@@ -3,7 +3,7 @@ package me.lightspeed7.dsug.reactive
 import akka.contrib.pattern.ReceivePipeline
 import me.lightspeed7.dsug.Actors
 
-case class TimerEvent(actorName: String, value: Float);
+case class TimerEvent(actorName: String, value: Long);
 case class CounterEvent(actorName: String, value: Long = 1);
 
 trait Monitoring extends ReceivePipeline {
@@ -16,7 +16,7 @@ trait Monitoring extends ReceivePipeline {
         Actors.statistics ! CounterEvent(actorName)
         val start = System.nanoTime();
         inner(x)
-        Actors.statistics ! TimerEvent(actorName, System.nanoTime() - start);
+        Actors.statistics ! TimerEvent(actorName, (System.nanoTime() - start) / (1000 * 1000));
     })
 
 }

@@ -19,6 +19,21 @@ object Scenarios {
   implicit val system = ActorSystem("Sys")
   implicit val materializer = ActorMaterializer()
 
+  def runScenario(num: Int): RunnableGraph[Unit] = num match {
+    case 1 =>
+      scenario1.run; scenario1
+    case 2 =>
+      scenario2.run; scenario2
+    case 3 =>
+      scenario3.run; scenario3
+    case 4 =>
+      scenario4.run; scenario4
+    case 5 =>
+      scenario5.run; scenario5
+    case 6 =>
+      scenario6.run; scenario6
+  }
+
   /**
    * 1. Fast publisher, Faster consumer
    * - publisher with a map to send, and a throttler (e.g 50 msg/s)
@@ -31,7 +46,7 @@ object Scenarios {
 
       // get the elements for this flow.
       val source = throttledSource(1 second, 20 milliseconds, 20000, "fastProducer")
-      val fastSink = Sink.actorSubscriber(Props(classOf[DelayingActor], "fastSink"))
+      val fastSink = Sink.actorSubscriber(Props(classOf[DelayingActor], "fastSink", 0L))
 
       // connect source to sink
       source ~> fastSink
@@ -53,7 +68,7 @@ object Scenarios {
 
       // get the elements for this flow.
       val source = throttledSource(1 second, 20 milliseconds, 10000, "fastProducer")
-      val slowingSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "slowingDownSink", 10l))
+      val slowingSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "slowingDownSink", 10L))
 
       // connect source to sink
       source ~> slowingSink
@@ -73,7 +88,7 @@ object Scenarios {
 
       // first get the source
       val source = throttledSource(1 second, 30 milliseconds, 6000, "fastProducer")
-      val slowingSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "slowingDownSinkWithBuffer", 20l))
+      val slowingSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "slowingDownSinkWithBuffer", 20L))
 
       // now get the buffer, with 100 messages, which overflow
       // strategy that starts dropping messages when it is getting
@@ -99,8 +114,8 @@ object Scenarios {
       val source = throttledSource(1 second, 20 milliseconds, 9000, "fastProducer")
 
       // and the sinks
-      val fastSink = Sink.actorSubscriber(Props(classOf[DelayingActor], "broadcast_fastsink", 0l))
-      val slowingDownSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "broadcast_slowsink", 20l))
+      val fastSink = Sink.actorSubscriber(Props(classOf[DelayingActor], "broadcast_fastsink", 0L))
+      val slowingDownSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "broadcast_slowsink", 20L))
 
       // and the broadcast
       val broadcast = builder.add(Broadcast[Int](2))
@@ -124,8 +139,8 @@ object Scenarios {
       val source = throttledSource(1 second, 20 milliseconds, 9000, "fastProducer")
 
       // and the sinks
-      val fastSink = Sink.actorSubscriber(Props(classOf[DelayingActor], "fastSink", 0l))
-      val slowingDownSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "slowSink", 30l))
+      val fastSink = Sink.actorSubscriber(Props(classOf[DelayingActor], "fastSink", 0L))
+      val slowingDownSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "slowSink", 30L))
       //      val buffer = Flow[Int].buffer(300, OverflowStrategy.dropTail)
       val buffer = Flow[Int].buffer(3500, OverflowStrategy.backpressure)
 
@@ -152,8 +167,8 @@ object Scenarios {
       val source = throttledSource(1 second, 10 milliseconds, 20000, "fastProducer")
 
       // and the sin
-      val fastSink = Sink.actorSubscriber(Props(classOf[DelayingActor], "fastSinkWithBalancer", 12l))
-      val slowingDownSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "slowingDownWithBalancer", 14l, 1l))
+      val fastSink = Sink.actorSubscriber(Props(classOf[DelayingActor], "fastSinkWithBalancer", 12L))
+      val slowingDownSink = Sink.actorSubscriber(Props(classOf[SlowDownActor], "slowingDownWithBalancer", 14l, 1L))
       val balancer = builder.add(Balance[Int](2))
 
       // connect source to sink with additional step
@@ -192,7 +207,7 @@ object Scenarios {
   }
 }
 
-class DelayingActor(name: String, delay: Long = 0) extends ActorSubscriber with Monitoring {
+class DelayingActor(val name: String, val delay: Long = 0) extends ActorSubscriber with Monitoring {
   override protected def requestStrategy: RequestStrategy = OneByOneRequestStrategy
 
   actorName = name
@@ -219,4 +234,5 @@ class SlowDownActor(name: String, delayPerMsg: Long = 0, initialDelay: Long = 0)
     case _ =>
   }
 }
+
 

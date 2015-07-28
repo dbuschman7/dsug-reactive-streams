@@ -2,6 +2,8 @@ package me.lightspeed7.dsug
 
 import me.lightspeed7.dsug.ui.StatisticsActor
 import play.api.Logger
+import me.lightspeed7.dsug.reactive.Boot.Scenarios
+import akka.stream.scaladsl.RunnableGraph
 
 object Actors {
   import play.libs.Akka
@@ -14,14 +16,20 @@ object Actors {
   lazy val generator: ActorRef = system.actorOf(Props(classOf[GeneratorActor], "GeneratorActor"))
 
   lazy val statistics: ActorRef = system.actorOf(Props(classOf[StatisticsActor], "StatisticsActor"))
+
+  private var current: RunnableGraph[Unit] = _
+
   def start = {
     generator
     // more here
+    current = Scenarios.runScenario(1)
+
     Logger.info("Actors - Generator started")
   }
 
-  def stop = system.terminate()
-
+  def stop = {
+    system.terminate()
+  }
 }
 
 

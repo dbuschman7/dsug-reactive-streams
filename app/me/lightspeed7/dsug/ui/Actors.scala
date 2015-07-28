@@ -82,14 +82,25 @@ object `package` {
         val results = Seq("CO", "NY", "FL", "CA", "HI").map { st => Count(st, Random.nextInt(100)) }
         val tsc = TimeSeriesCount(System.currentTimeMillis() / 1000, results)
         EventBus.publish(MessageEvent("payload", Payload(Json.toJson(tsc), "geoAvgBids")))
+
+        val json = MetricsCollector.getCurrentData(System.currentTimeMillis() / 1000)
+        println(json)
       }
 
       case TimerEvent(actorName, time) => {
-        println(s"Timer   - ${actorName} -> ${time}")
+//        println(s"Timer   - ${actorName} -> ${time}")
+        MetricsCollector.find(MetricType.Timer, actorName)
+          .getOrElse(MetricsCollector.newMetricTimer(actorName))
+          .asInstanceOf[MetricTimer]
+          .update(time)
       }
 
       case CounterEvent(actorName, count) => {
-        println(s"Counter - ${actorName} -> ${count}")
+//        println(s"Counter - ${actorName} -> ${count}")
+        MetricsCollector.find(MetricType.Counter, actorName)
+          .getOrElse(MetricsCollector.newMetricCounter(actorName))
+          .asInstanceOf[MetricCounter]
+          .incrementBy(count)
       }
 
     }
