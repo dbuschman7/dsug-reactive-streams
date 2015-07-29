@@ -5,10 +5,65 @@
 <section>
 	<div class="row" data-ng-controller="ReactiveController" data-ng-init="startSocket('@uuid')">
 		<div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-offset-1 col-lg-offset-1">
-				<h3>Reactive Akka Streams</h3>
-			<div class="col-sm-10 border " >
+			<div class="col-sm-12 border " >
 				<table width="100%" >
-					<tr ><td colspan="10"><h3>Counts By Actor</h3></td></tr>
+					<tr >
+						<td colspan="3" width="60%" ><h3>Reactive Akka Streams</h3></td>
+						<td rowspan="2" width="40%"  >
+						<div class="btn-group" role="group" aria-label="...">
+							<button type="button" class="btn btn-default-lg" ng-repeat="scenario in scenarios" class="btn btn-default"><a href="#" ng-click="changeScenario(scenario)">{{scenario.num}}</a></li>
+						</div>
+						<div id="title">
+							<table>
+							<tr>
+								<td><h1>{{scenario.name}}</h1></td>
+								<td>&nbsp;&nbsp;
+							      <button type="button" class="btn btn-default-lg" class="btn btn-default"><a href="#" ng-click="startScenario(scenario)">Start</a></li>
+								</td>
+							</tr>
+							</table>
+						</div>
+						<div id="scenario1" ng-show="scenario.num == 1" >
+							Show some text here about the scenario 1
+							<pre>
+fastSource ~> fastSink
+</pre>
+						</div>
+						<div id="scenario2" ng-show="scenario.num == 2" >
+							Show some text here about the scenario 2
+							<pre >
+fastSource ~> slowingSink
+</pre>
+						</div>
+						<div id="scenario3" ng-show="scenario.num == 3" >
+							Show some text here about the scenario 3
+							<pre>
+fastSource ~> buffer ~> slowingSink
+</pre>
+						</div>
+						<div id="scenario4" ng-show="scenario.num == 4" >
+							Show some text here about the scenario 4
+							<pre>
+fastSource ~> broadcast ~> fastSink
+/*         */ broadcast ~> slowSink
+</pre>
+						</div>
+						<div id="scenario5" ng-show="scenario.num == 5" >
+							Show some text here about the scenario 5
+							<pre>
+fastSource ~> broadcast /*     */ ~> fastSink
+/*         */ broadcast ~> buffer ~> slowSink
+</pre>
+						</div>
+						<div id="scenario6" ng-show="scenario.num == 6" >
+							Show some text here about the scenario 6
+							<pre>
+fastSource ~> fastSink
+</pre>
+						</div>
+						
+						</td>
+					</tr>
 					<tr>
 						<td class="col-sm-3 "><h3>Fast Source</h3><div id="fastSourceChart" class="epoch gauge-tiny"></div></td>
 						<td class="col-sm-3 "><h3>Fast Sink</h3><div id="fastSinkChart" class="epoch gauge-tiny"></div></td>
@@ -22,10 +77,6 @@
 					<tr ><td colspan="10">&nbsp;</td></tr>
 				</table>
 				
-			</div>
-			<div class="col-sm-2 border container " >
-				<h3>Event Counts</h3>
-				<strong>{{rawCount | number : 0 }}</strong>
 			</div>
 		</div>
 	</div>
@@ -82,6 +133,20 @@
 		if (count > 60) {
 			return
 
+			
+
+						
+
+			
+
+									
+
+			
+
+						
+
+			
+
 		}
 
 		if (key == 'fastSource') {
@@ -112,20 +177,6 @@
 		} ]
 	});
 	areaChartData.push({
-		label : "CA",
-		values : [ {
-			time : 1,
-			y : 0
-		} ]
-	});
-	areaChartData.push({
-		label : "FL",
-		values : [ {
-			time : 1,
-			y : 0
-		} ]
-	});
-	areaChartData.push({
 		label : "Fast Sink",
 		values : [ {
 			time : 1,
@@ -133,7 +184,7 @@
 		} ]
 	});
 	areaChartData.push({
-		label : "NY",
+		label : "Slow Sink",
 		values : [ {
 			time : 1,
 			y : 0
@@ -152,6 +203,21 @@
 		for (var i = 0; i < counts.length; i++) {
 			if (counts[i] > 100) {
 				return
+
+				
+
+								
+
+				
+
+												
+
+				
+
+								
+
+				
+
 			}
 		}
 		//		console.log("area - ts = " + ts + "  counts = " + counts + " values.length " + areaChartData[0].values.length)
@@ -167,14 +233,6 @@
 		data.push({
 			time : ts,
 			y : counts[2]
-		});
-		data.push({
-			time : ts,
-			y : counts[3]
-		});
-		data.push({
-			time : ts,
-			y : counts[4]
 		});
 		area.push(data);
 	}

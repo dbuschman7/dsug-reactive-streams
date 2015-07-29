@@ -42,9 +42,9 @@ object ApplicationBuild extends Build {
 
     // GUI
     "org.webjars" %% "webjars-play" % "2.4.0-1",
-    "org.webjars" % "angularjs" % "1.2.23",
+    "org.webjars" % "angularjs" % "1.4.3",
     "org.webjars" % "bootstrap" % "3.2.0",
-    "org.webjars" % "angular-ui-bootstrap" % "0.12.0",
+//    "org.webjars" % "angular-ui-bootstrap" % "0.12.0",
     "org.webjars" % "d3js" % "3.5.3",
 
     // Reactive
