@@ -20,3 +20,5 @@ server.pid
 .classpath
 .settings/
 .project
+
+.cache-main

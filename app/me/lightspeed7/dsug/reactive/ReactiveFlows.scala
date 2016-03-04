@@ -1,6 +1,5 @@
 package me.lightspeed7.dsug.reactive
 
-package Boot
 
 import scala.concurrent.duration._
 
@@ -12,7 +11,6 @@ import akka.stream.scaladsl._
 import akka.stream.scaladsl.FlowGraph.Implicits._
 
 import me.lightspeed7.dsug.Actors
-import me.lightspeed7.dsug.reactive.Monitoring
 
 object Scenarios {
 

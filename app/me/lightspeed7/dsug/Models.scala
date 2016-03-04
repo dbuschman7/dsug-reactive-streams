@@ -12,7 +12,9 @@ object Payload {
   implicit val payloadFormat = Json.format[Payload]
 }
 
-case class Count(key: String, count: Long)
+case class Count(key: String, count: Long) {
+  def inc(v: Long) = copy(count = count + v)
+}
 object Count {
   implicit val countFormat = Json.format[Count]
 }

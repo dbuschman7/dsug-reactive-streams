@@ -12,8 +12,7 @@ class ConvertListToMapTest extends FunSuite {
   test("Convert list to a map of keys mapped to counts") {
     val raw = List(Count("CO", 123), Count("UT", 123), Count("CO", 123), Count("AZ", 123), Count("CO", 123), Count("UT", 123))
 
-    val counts = raw.groupBy(_.key).map(c => c._1 -> c._2.foldLeft(0)((s, c) => s + c.count))
-
+    val counts = raw.groupBy(_.key).map(c => c._1 -> c._2.foldLeft(0)((s, c) => (c.count + s).toInt))
     counts.foreach { f =>
       f._1 match {
         case "CO" => f._2 should be(369)
