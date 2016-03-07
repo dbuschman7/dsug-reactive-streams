@@ -15,7 +15,7 @@
 
 ## Reactive Manifesto Aspects
 
-<img src="reactive-traits.png" width="75%" height="300" />
+<img src="reactive_traits.png" width="75%" height="300" />
 
 ###Responsive: 
 The system responds in a timely manner if at all possible.
