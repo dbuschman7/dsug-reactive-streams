@@ -43,7 +43,7 @@ A Flow that has both ends "attached" to a **Source** and **Sink** respectively, 
 ###Illegal stream elements
 In accordance to the Reactive Streams specification (Rule 2.13) Akka Streams do not allow null to be passed through the stream as an element. In case you want to model the concept of absence of a value we recommend using scala.Option or scala.util.Either.
 
-
+[Next >> Graph Stages](35-graph-shapes.md) 
 
 
 

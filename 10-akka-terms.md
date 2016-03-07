@@ -25,3 +25,4 @@ We talk about blocking if the delay of one thread can indefinitely delay some of
 
 Non-blocking operations are preferred to blocking ones, as the overall progress of the system is not trivially guaranteed when it contains blocking operations.
 
+[Next >> Akka Streams Glossary](20-akka-stream-terms.md) 

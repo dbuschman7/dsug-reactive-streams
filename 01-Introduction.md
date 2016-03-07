@@ -25,3 +25,6 @@ The system stays responsive in the face of failure.
 The system stays responsive under varying workload. 
 ###Message Driven: 
 Reactive Systems rely on asynchronous message-passing to establish a boundary between components that ensures loose coupling, isolation, location transparency, and provides the means to delegate errors as messages.
+
+
+[Next >> Akka Glossary](10-akka-terms.md) 
