@@ -1,7 +1,7 @@
 # Reactive Streams 2.0 with Akka Streams 
 
 <img src="lightbend.png" width="300" height="100" />
-<img src="akka_full_color.svg" width="300" height="100" />
+<img src="akka_full_color.png" width="300" height="100" />
 <img src="scala.png" width="200" height="100" />
 
 ### TL;DR
@@ -15,7 +15,7 @@
 
 ## Reactive Manifesto Aspects
 
-<img src="reactive-traits.svg" width="75%" height="300" />
+<img src="reactive-traits.png" width="75%" height="300" />
 
 ###Responsive: 
 The system responds in a timely manner if at all possible.
