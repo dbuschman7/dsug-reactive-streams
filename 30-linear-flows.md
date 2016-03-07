@@ -23,25 +23,25 @@ val sink = Sink.foreach[String](println(_))
 val sink = Sink.ignore
 val sink = Sink.fold[Int, Int](0)(_ + _) 
 ```
-###Flow
+###Flow ( Filter, Duplicate, Map ) 
 A processing stage which has exactly one input and output, which connects its up- and downstreams by transforming the data elements flowing through it.
 ```scala
 val flow = Flow[Long].map(_ * 2)
 val flow2 = Flow[Long].filter(_ % 2 == 0)
-val flow2: Flow[Long, Long, Unit] = Flow[Long].mapAsync(2) { in => Future.successful[Long](in * 2) }
+val flow3: Flow[Long, Long, Unit] = Flow[Long].mapAsync(2) { in => Future.successful[Long](in * 2) }
+val flow4 = Flow[Long].map(_ * 2).buffer(1000, OverflowStrategy.backpressure)
 ```
 ### Composing
 It is possible to attach a **Flow** to a **Source** resulting in a composite source, and it is also possible to prepend a **Flow** to a **Sink** to get a new sink.
 
+![Composed Source](composed-source.png)
 
 ###RunnableGraph
 A Flow that has both ends "attached" to a **Source** and **Sink** respectively, and is ready to be run().
 
-![Composed Source](composed-source.png)
-
 
 ###Illegal stream elements
-In accordance to the Reactive Streams specification (Rule 2.13) Akka Streams do not allow null to be passed through the stream as an element. In case you want to model the concept of absence of a value we recommend using scala.Option or scala.util.Either.
+In accordance to the Reactive Streams specification (Rule 2.13) Akka Streams do not allow _null_** to be passed through the stream as an element. In case you want to model the concept of absence of a value we recommend using scala.Option or scala.util.Either.
 
 [Next >> Graph Stages](35-graph-shapes.md) 
 

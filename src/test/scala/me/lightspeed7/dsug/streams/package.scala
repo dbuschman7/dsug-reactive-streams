@@ -13,6 +13,7 @@ import akka.stream.Attributes
 import akka.stream.stage.GraphStageLogic
 import akka.stream.stage.InHandler
 import akka.stream.stage.OutHandler
+import akka.stream.OverflowStrategy
 
 package object streams {
 
@@ -33,6 +34,7 @@ package object streams {
   val flow1 = Flow[Long].map(_ * 2)
   val flow2 = Flow[Long].filter(_ % 2 == 0)
   val flow3 = Flow[Long].mapAsync(2) { in => Future.successful[Long](in * 2) }
+  val flow4 = Flow[Long].map(_ * 2).buffer(1000, OverflowStrategy.backpressure)
 
   // Graph Test
   def createThrottle(ratePerMinute: Int) = Source.fromIterator[Long] { () => Stream.continually({ Thread.sleep(60 * 1000 / ratePerMinute); 1L }).iterator }
