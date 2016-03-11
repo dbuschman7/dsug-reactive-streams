@@ -24,7 +24,7 @@
 
 ![Simple DSL](graph-dsl.png)
 ```scala
-val g = RunnableGraph.fromGraph(GraphDSL.create() { implicit builder: GraphDSL.Builder[Unit] =>
+val g = RunnableGraph.fromGraph(GraphDSL.create() { implicit builder: GraphDSL.Builder[Done] =>
   import GraphDSL.Implicits._
   val in = Source(1 to 10)
   val out = Sink.ignore

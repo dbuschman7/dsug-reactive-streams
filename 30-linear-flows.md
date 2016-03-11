@@ -28,7 +28,7 @@ A processing stage which has exactly one input and output, which connects its up
 ```scala
 val flow = Flow[Long].map(_ * 2)
 val flow2 = Flow[Long].filter(_ % 2 == 0)
-val flow3: Flow[Long, Long, Unit] = Flow[Long].mapAsync(2) { in => Future.successful[Long](in * 2) }
+val flow3: Flow[Long, Long, akka.NotUsed] = Flow[Long].mapAsync(2) { in => Future.successful[Long](in * 2) }
 val flow4 = Flow[Long].map(_ * 2).buffer(1000, OverflowStrategy.backpressure)
 ```
 ### Composing

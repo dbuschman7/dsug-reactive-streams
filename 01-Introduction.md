@@ -9,7 +9,7 @@
 
 * Reactive Manifesto - [http://www.reactivemanifesto.org/]
 * Reactive Streams Specification 1.0.0 - April 30, 2015 -- [http://www.reactive-streams.org/]
-* Akka Streams 2.0.3 
+* Akka Streams 2.0.2 
 * Documentation ; http://doc.akka.io/docs/akka-stream-and-http-experimental/2.0.3/AkkaStreamAndHTTPScala.pdf
 
 
