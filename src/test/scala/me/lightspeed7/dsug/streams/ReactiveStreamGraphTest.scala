@@ -2,10 +2,11 @@ package me.lightspeed7.dsug.streams
 
 import org.scalatest.FunSuite
 import akka.actor.ActorSystem
-
 import akka.stream.scaladsl.Sink
 import akka.stream.scaladsl._
 import akka.stream._
+import scala.concurrent.Await
+import scala.concurrent.duration._
 
 class ReactiveStreamGraphTest extends FunSuite {
 
@@ -15,7 +16,7 @@ class ReactiveStreamGraphTest extends FunSuite {
 
   test("Create a Reactive Stream in a Graph Shape") {
 
-    val throttling: Source[Long, Unit] = createThrottle(1000)
+    val throttling: Source[Long, akka.NotUsed] = createThrottle(500)
     val oscillator = new Oscillator(1).createSource
 
     val processor = Flow[Long].map{ in => in + 2 } 
@@ -52,6 +53,6 @@ class ReactiveStreamGraphTest extends FunSuite {
     rg.run()(materializer)
 
     Thread.sleep(10 * 1000) // run the system for awhile and then shut it down.
-    system.shutdown()
+    Await.result(system.terminate(), 5 seconds)
   }
 }

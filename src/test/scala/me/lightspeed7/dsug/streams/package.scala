@@ -66,7 +66,7 @@ package object streams {
       s
     }
 
-    def createSource: Source[Long, Unit] = Source.fromIterator { () => stream.iterator }
+    def createSource: Source[Long, akka.NotUsed] = Source.fromIterator { () => stream.iterator }
   }
 
 }

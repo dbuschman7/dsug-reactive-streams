@@ -10,6 +10,7 @@ import org.scalatest.BeforeAndAfterAll
 import akka.stream.ActorMaterializer
 import scala.concurrent.duration._
 import scala.concurrent.Await
+import scala.concurrent.duration._
 
 class StreamTest extends FunSuite with BeforeAndAfterAll {
 
@@ -17,7 +18,7 @@ class StreamTest extends FunSuite with BeforeAndAfterAll {
   implicit val ec = system.dispatcher
   implicit val materializer = ActorMaterializer.create(system)
 
-  override def afterAll = system.shutdown()
+  override def afterAll = Await.result(system.terminate(), 5 seconds)
 
   test("Test the meat of the algorithm") {
 
