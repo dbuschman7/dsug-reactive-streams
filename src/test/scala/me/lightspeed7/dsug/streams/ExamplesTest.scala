@@ -31,21 +31,7 @@ class ExamplesTest extends FunSuite with BeforeAndAfterAll {
   val flow4 = Flow[Long].map(_ * 2).buffer(1000, OverflowStrategy.backpressure)
   val flow5 = Flow[Long].map { l => Thread.sleep(100); l }
 
-  case class Counter(count: Long) {
-    val current: AtomicLong = new AtomicLong(0)
-    def incrementAndOutput: Option[Long] =
-      current.incrementAndGet() match {
-        case c: Long if (c % count == 0) => Some(c)
-        case _                           => None
-      }
-  }
-
-  def printEvery(count: Int, character: String) = {
-    val cntr = Counter(count)
-    Flow[Long].map { l => cntr.incrementAndOutput.map(_ => print(character)); l }
-  }
-
-  //
+  // Setup 
   implicit val system = ActorSystem("Sys")
   implicit val ec = system.dispatcher
   implicit val materializer = ActorMaterializer.create(system)
@@ -54,6 +40,7 @@ class ExamplesTest extends FunSuite with BeforeAndAfterAll {
 
   override def afterAll = await(system.terminate())
 
+  // Test
   test("1 to 10 time 2 - println") {
 
     val flow = source1

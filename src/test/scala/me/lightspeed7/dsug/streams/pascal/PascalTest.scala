@@ -19,6 +19,7 @@ class PascalTest extends FunSuite with BeforeAndAfterAll {
 
   override def afterAll = Await.result(system.terminate(), 5 seconds)
 
+  // Test 
   test("Test the meat of the algorithm") {
 
     val input = Seq(Pascal(1L), Pascal(1L, 1), Pascal(1L, 2, 1), Pascal(1L, 3, 3, 1))
