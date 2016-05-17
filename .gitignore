@@ -23,4 +23,5 @@ server.pid
 .settings/
 .project
 
-*.html
+.*.html
+

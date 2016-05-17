@@ -1,4 +1,4 @@
-# Reactive Streams 2.0 with Akka Streams 
+# Akka Streams 2.0 with Akka Streams 
 
 <img src="lightbend.png" width="300" height="100" />
 <img src="akka_full_color.png" width="300" height="100" />
@@ -7,10 +7,10 @@
 ### TL;DR
 
 
-* Reactive Manifesto - [http://www.reactivemanifesto.org/]
+* Reactive Manifesto 2.0 - [http://www.reactivemanifesto.org/]
 * Reactive Streams Specification 1.0.0 - April 30, 2015 -- [http://www.reactive-streams.org/]
-* Akka Streams 2.0.2 
-* Documentation ; http://doc.akka.io/docs/akka-stream-and-http-experimental/2.0.3/AkkaStreamAndHTTPScala.pdf
+* Akka Streams : 2.4.4 
+* Documentation : http://doc.akka.io/docs/akka/2.4.4/scala/stream/index.html
 
 
 ## Reactive Manifesto Aspects
